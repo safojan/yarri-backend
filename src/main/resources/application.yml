@@ -1,3 +1,4 @@
+
 spring:
   datasource:
     url: ${JDBC_DATABASE_URL:jdbc:postgresql://localhost:5432/ngo-app}
@@ -20,6 +21,7 @@ spring:
   docker:
     compose:
       lifecycle-management: start-only
+
 error:
   handling:
     http-status-in-json-response: true
@@ -27,3 +29,7 @@ error:
     full-stacktrace-http-statuses: 5xx
     log-levels:
       5xx: ERROR
+
+jwt:
+  secret : "fromFjb3R0YSBTaGlobGRzIE9mIFBhdHobs+evenJ1cHRlZA=="
+  expiration: 86400000
