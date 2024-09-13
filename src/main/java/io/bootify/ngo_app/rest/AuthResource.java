@@ -1,7 +1,9 @@
 package io.bootify.ngo_app.rest;
-
 import io.bootify.ngo_app.model.AuthRequest;
-import io.bootify.ngo_app.repos.UserRepository;
+import io.bootify.ngo_app.model.AuthResponse;
+import io.bootify.ngo_app.model.RegisterRequest;
+import io.bootify.ngo_app.security.JwtHelper;
+import io.bootify.ngo_app.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -10,43 +12,46 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthResource {
 
+    private final AuthenticationManager authenticationManager;
+    private final CustomUserDetailsService userDetailsService;
+    private final JwtHelper jwtHelper;
+
     @PostMapping("/login")
-    public String login(@RequestBody AuthRequest authRequest ) {
-        return "User logged in successfully";
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest authRequest) {
+        Authentication authentication = authenticateUser(authRequest.getEmail(), authRequest.getPassword());
+        System.out.println("Email: " + authRequest.getEmail());
+        System.out.println("Password: " + authRequest.getPassword());
+        UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getEmail());
+        String token = jwtHelper.generateToken(userDetails);
+
+
+        AuthResponse authResponse = new AuthResponse(token);
+        return ResponseEntity.ok(authResponse);
     }
 
+    //registration endpoint with error handling
     @PostMapping("/register")
-    public String register(@RequestBody AuthRequest authRequest ) {
-     return "User registered successfully";
-    }
-
-    @PostMapping("/logout")
-    public String logout() {
-        return "User logged out successfully";
-    }
-
-    @PostMapping("/forgot-password")
-    public String forgotPassword(@RequestBody Map<String, String> email) {
-        return "Password reset link sent to email";
-    }
-
-    @PostMapping("/reset-password")
-    public String resetPassword(@RequestBody Map<String, String> password) {
-        return "Password reset successfully";
-    }
-
-    @PostMapping("/login/oauth2")
-    public String loginOAuth2(@RequestBody Map<String, String> credentials) {
-        return "User logged in successfully";
+    public ResponseEntity<String> register(@Valid @RequestBody RegisterRequest registerRequest) {
+        userDetailsService.register(registerRequest);
+        return ResponseEntity.ok("User registered successfully");
     }
 
 
+
+
+
+    private Authentication authenticateUser(String username, String password) {
+
+        return authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(username, password)
+        );
+    }
 
 }
