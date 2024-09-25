@@ -66,6 +66,10 @@ public class RoleService {
         return role;
     }
 
+    public Role getRole(final String name) {
+        return roleRepository.findByName(name);
+    }
+
     public ReferencedWarning getReferencedWarning(final Integer id) {
         final ReferencedWarning referencedWarning = new ReferencedWarning();
         final Role role = roleRepository.findById(id)

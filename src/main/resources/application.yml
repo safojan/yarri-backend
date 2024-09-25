@@ -1,4 +1,3 @@
-
 spring:
   datasource:
     url: ${JDBC_DATABASE_URL:jdbc:postgresql://localhost:5432/ngo-app}
@@ -7,17 +6,20 @@ spring:
     hikari:
       connection-timeout: 30000
       maximum-pool-size: 10
+
   jpa:
     hibernate:
       ddl-auto: update
-    open-in-view: false
+    open-in-view: true  # Change this to true to allow lazy loading outside of a transaction
     properties:
       hibernate:
+        enable_lazy_load_no_trans: true  # Add this to handle lazy loading outside of transactions
         jdbc:
           lob:
             non_contextual_creation: true
         id:
           new_generator_mappings: true
+
   docker:
     compose:
       lifecycle-management: start-only
@@ -31,5 +33,8 @@ error:
       5xx: ERROR
 
 jwt:
-  secret : "fromFjb3R0YSBTaGlobGRzIE9mIFBhdHobs+evenJ1cHRlZA=="
+  secret : "cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3ecf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3ecf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e"
   expiration: 86400000
+
+
+
