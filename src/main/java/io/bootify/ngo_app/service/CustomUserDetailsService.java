@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -40,12 +41,23 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 
     public void register(RegisterRequest registerRequest) {
+        // Check if user already exists
+        if (userRepository.findByEmail(registerRequest.getEmail()) != null) {
+            throw new RuntimeException("User already exists");
+        }
+        //new user with role as user
         User user = new User();
-        user.setName(registerRequest.getName());
+        Role role = roleService.getRole("user");
         user.setEmail(registerRequest.getEmail());
-        user.setPassword(registerRequest.getPassword());
-        user.setRole(roleService.getRole("USER"));
-
+        //encrypt password using bcrypt
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        String encryptedPassword =bCryptPasswordEncoder.encode(registerRequest.getPassword());
+        user.setPassword(encryptedPassword);
+        user.setRole(role);
+        user.setPhone(registerRequest.getPhone());
+        user.setName(registerRequest.getName());
+       // userRepository.save(user);
+        System.out.println(user.getRole().getId());
         userRepository.save(user);
     }
     public String getRole(String email){
@@ -57,3 +69,5 @@ public class CustomUserDetailsService implements UserDetailsService {
         return userRepository.findByEmail(email);
     }
 }
+
+

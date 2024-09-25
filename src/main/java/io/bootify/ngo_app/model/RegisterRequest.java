@@ -12,5 +12,4 @@ public class RegisterRequest {
     String password;
     String phone;
     String address;
-    Integer role = 10000;
 }
