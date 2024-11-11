@@ -3,11 +3,15 @@ package io.bootify.ngo_app.service;
 import io.bootify.ngo_app.domain.Permission;
 import io.bootify.ngo_app.domain.User;
 import io.bootify.ngo_app.domain.UserPermission;
+import io.bootify.ngo_app.model.CustomDTO.PermissionsDTO;
+import io.bootify.ngo_app.model.PermissionDTO;
 import io.bootify.ngo_app.model.UserPermissionDTO;
 import io.bootify.ngo_app.repos.PermissionRepository;
 import io.bootify.ngo_app.repos.UserPermissionRepository;
 import io.bootify.ngo_app.repos.UserRepository;
 import io.bootify.ngo_app.util.NotFoundException;
+
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -57,6 +61,24 @@ public class UserPermissionService {
         userPermissionRepository.deleteById(id);
     }
 
+    //get the permission of a user from user_id
+    public List<PermissionsDTO> getPermissionByUserId(final Integer id) {
+        final List<UserPermission> userPermissions = userPermissionRepository.findByUserId(id);
+        final List<PermissionsDTO> UserPermissionWithNames =new ArrayList<>();
+      for(UserPermission userPermission : userPermissions){
+        Integer permission_id=userPermission.getPermission().getId();
+        String permission_name=permissionRepository.findById(permission_id).get().getName();
+        PermissionsDTO currentPermission = new PermissionsDTO();
+        currentPermission.setId(userPermission.getId());
+        currentPermission.setUser(userPermission.getUser().getId());
+        currentPermission.setPermission(userPermission.getPermission().getId());
+        currentPermission.setPermissionName(permission_name);
+        UserPermissionWithNames.add(currentPermission);
+      }
+        return UserPermissionWithNames;
+    }
+
+
     private UserPermissionDTO mapToDTO(final UserPermission userPermission,
             final UserPermissionDTO userPermissionDTO) {
         userPermissionDTO.setId(userPermission.getId());
@@ -64,6 +86,10 @@ public class UserPermissionService {
         userPermissionDTO.setPermission(userPermission.getPermission() == null ? null : userPermission.getPermission().getId());
         return userPermissionDTO;
     }
+
+
+
+
 
     private UserPermission mapToEntity(final UserPermissionDTO userPermissionDTO,
             final UserPermission userPermission) {

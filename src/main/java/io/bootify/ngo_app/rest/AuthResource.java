@@ -23,15 +23,12 @@ public class AuthResource {
     private final CustomUserDetailsService userDetailsService;
     private final JwtHelper jwtHelper;
 
+  @CrossOrigin(origins = "http://127.0.0.1:4200")
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest authRequest) {
         Authentication authentication = authenticateUser(authRequest.getEmail(), authRequest.getPassword());
-        System.out.println("Email: " + authRequest.getEmail());
-        System.out.println("Password: " + authRequest.getPassword());
         UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getEmail());
         String token = jwtHelper.generateToken(userDetails);
-
-
         AuthResponse authResponse = new AuthResponse(token);
         return ResponseEntity.ok(authResponse);
     }
@@ -42,10 +39,6 @@ public class AuthResource {
         userDetailsService.register(registerRequest);
         return ResponseEntity.ok("User registered successfully");
     }
-
-
-
-
 
     private Authentication authenticateUser(String username, String password) {
 

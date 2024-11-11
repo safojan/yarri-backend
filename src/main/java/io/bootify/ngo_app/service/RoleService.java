@@ -70,6 +70,10 @@ public class RoleService {
         return roleRepository.findByName(name);
     }
 
+    public Role GetRoleById(final Integer id){
+        return roleRepository.findById(id).orElseThrow(NotFoundException::new);
+    }
+
     public ReferencedWarning getReferencedWarning(final Integer id) {
         final ReferencedWarning referencedWarning = new ReferencedWarning();
         final Role role = roleRepository.findById(id)

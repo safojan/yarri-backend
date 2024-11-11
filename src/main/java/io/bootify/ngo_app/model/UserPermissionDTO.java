@@ -1,5 +1,7 @@
 package io.bootify.ngo_app.model;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import io.bootify.ngo_app.views.UserViews;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,8 +10,11 @@ import lombok.Setter;
 @Setter
 public class UserPermissionDTO {
 
-    private Integer id;
-    private Integer user;
-    private Integer permission;
+  @JsonView({UserViews.WithPassword.class, UserViews.WithoutPassword.class})
+  private Integer id;
+  @JsonView({UserViews.WithPassword.class, UserViews.WithoutPassword.class})
+  private Integer user;
+  @JsonView({UserViews.WithPassword.class, UserViews.WithoutPassword.class})
+  private Integer permission;
 
 }

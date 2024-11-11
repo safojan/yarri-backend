@@ -13,6 +13,13 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import static org.springframework.security.config.Customizer.withDefaults;
+
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -35,10 +42,10 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(AbstractHttpConfigurer::disable)  // Disable CSRF for stateless JWT tokens
+     http.cors(withDefaults())
+         .csrf(AbstractHttpConfigurer::disable)  // Disable CSRF for stateless JWT tokens
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/","/api/auth/login","/api/auth/register").permitAll()  // Permit login
+                        .requestMatchers("/","/api/auth/*").permitAll()  // Permit login
                         .anyRequest().authenticated()  // Protect other endpoints
                 )
                 .exceptionHandling(exception -> exception
@@ -57,6 +64,22 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring()
-                .requestMatchers("/h2-console/**", "/swagger-ui/**", "/v3/api-docs/**");  // Paths to ignore for security
+                .requestMatchers("/h2-console/**", "/swagger-ui/**", "/v3/api-docs/**");
+
+        // Paths to ignore for security
+    }
+
+    //bean for cors configuration
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+      CorsConfiguration configuration = new CorsConfiguration();
+      configuration.setAllowedOrigins(List.of("http://localhost:4200"));
+      configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+      configuration.setAllowedHeaders(List.of("*"));
+      configuration.setAllowCredentials(true);
+      UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+      source.registerCorsConfiguration("/**", configuration);
+      System.out.println(source);
+      return source;
     }
 }

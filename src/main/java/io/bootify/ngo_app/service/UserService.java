@@ -10,7 +10,12 @@ import io.bootify.ngo_app.domain.Role;
 import io.bootify.ngo_app.domain.Task;
 import io.bootify.ngo_app.domain.User;
 import io.bootify.ngo_app.domain.UserPermission;
+import io.bootify.ngo_app.model.CustomDTO.PermissionsDTO;
+import io.bootify.ngo_app.model.CustomDTO.UserDetailsDTO;
+import io.bootify.ngo_app.model.PermissionDTO;
+import io.bootify.ngo_app.model.RoleDTO;
 import io.bootify.ngo_app.model.UserDTO;
+import io.bootify.ngo_app.model.UserPermissionDTO;
 import io.bootify.ngo_app.repos.DonationRepository;
 import io.bootify.ngo_app.repos.FileRepository;
 import io.bootify.ngo_app.repos.NotificationRepository;
@@ -23,8 +28,13 @@ import io.bootify.ngo_app.repos.UserPermissionRepository;
 import io.bootify.ngo_app.repos.UserRepository;
 import io.bootify.ngo_app.util.NotFoundException;
 import io.bootify.ngo_app.util.ReferencedWarning;
+
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 
@@ -42,13 +52,23 @@ public class UserService {
     private final TaskRepository taskRepository;
     private final ProjectAssineeRepository projectAssineeRepository;
 
-    public UserService(final UserRepository userRepository, final RoleRepository roleRepository,
-            final UserPermissionRepository userPermissionRepository,
-            final ProjectRepository projectRepository, final DonationRepository donationRepository,
-            final RecurringDonationRepository recurringDonationRepository,
-            final NotificationRepository notificationRepository,
-            final FileRepository fileRepository, final TaskRepository taskRepository,
-            final ProjectAssineeRepository projectAssineeRepository) {
+    private final UserPermissionService userPermissionService;
+    private final RoleService roleService;
+
+
+  public UserService
+                     (
+                       final UserRepository userRepository, final RoleRepository roleRepository,
+                     final UserPermissionRepository userPermissionRepository,
+                     final ProjectRepository projectRepository, final DonationRepository donationRepository,
+                     final RecurringDonationRepository recurringDonationRepository,
+                     final NotificationRepository notificationRepository,
+                     final FileRepository fileRepository, final TaskRepository taskRepository,
+                     final ProjectAssineeRepository projectAssineeRepository, RoleService roleService, PermissionService permissionService,
+                     final UserPermissionService userPermissionService
+                   )
+        {
+
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.userPermissionRepository = userPermissionRepository;
@@ -59,7 +79,9 @@ public class UserService {
         this.fileRepository = fileRepository;
         this.taskRepository = taskRepository;
         this.projectAssineeRepository = projectAssineeRepository;
-    }
+        this.roleService = roleService;
+        this.userPermissionService = userPermissionService;
+        }
 
     public List<UserDTO> findAll() {
         final List<User> users = userRepository.findAll(Sort.by("id"));
@@ -172,5 +194,47 @@ public class UserService {
     public User findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
+
+    public UserDetailsDTO getUserDetails(final Integer id) {
+    return null;
+    }
+
+    //get the current user of the system
+  public UserDTO getCurrentUser() {
+    //check the current user in the jwt Authentication principal and return the user details
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+      UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+      return mapToDTO(userRepository.findByEmail(userDetails.getUsername()), new UserDTO());
+    }
+    return null;
+  }
+
+  //get the current user role
+  public RoleDTO getCurrentUserRole(){
+  //return the roleDTO of the current user
+    Integer id = getCurrentUser().getRole();
+   if(id!=null){
+     return roleService.get(id);
+   }
+    return null;
+  }
+
+  //get the current User Permissions
+  public List<PermissionsDTO> getCurrentUserPermissions(){
+    //get the current user id
+    Integer id = getCurrentUser().getId();
+    if(id!=null){
+      return userPermissionService.getPermissionByUserId(id);
+    }
+    return null;
+  }
+
+
+
+
+
+
+
 
 }

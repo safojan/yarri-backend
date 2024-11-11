@@ -5,6 +5,8 @@ import io.bootify.ngo_app.domain.User;
 import io.bootify.ngo_app.domain.UserPermission;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 
 public interface UserPermissionRepository extends JpaRepository<UserPermission, Integer> {
 
@@ -12,4 +14,5 @@ public interface UserPermissionRepository extends JpaRepository<UserPermission, 
 
     UserPermission findFirstByPermission(Permission permission);
 
+    List<UserPermission> findByUserId(Integer id);
 }
