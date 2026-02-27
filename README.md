@@ -1,44 +1,31 @@
-# NgoApp
+# Yari NGO – Backend Service
 
-This app was created with Bootify.io - tips on working with the code [can be found here](https://bootify.io/next-steps/).
+## About Yari
 
-## Development
+Yari is a digital platform designed to support NGOs in managing their operations more efficiently and transparently. The platform helps streamline core activities such as volunteer management, donor coordination, campaign tracking, and beneficiary records.
 
-When starting the application `docker compose up` is called and the app will connect to the contained services.
-[Docker](https://www.docker.com/get-started/) must be available on the current system.
+The purpose of Yari is to provide NGOs with a reliable and scalable system that reduces manual work, improves communication, and strengthens overall impact. It focuses on building structured workflows that allow organizations to operate with clarity and accountability.
 
-During development it is recommended to use the profile `local`. In IntelliJ `-Dspring.profiles.active=local` can be
-added in the VM options of the Run Configuration after enabling this property in "Modify options". Create your own
-`application-local.yml` file to override settings for development.
+## Backend Overview
 
-Lombok must be supported by your IDE. For IntelliJ install the Lombok plugin and enable annotation processing -
-[learn more](https://bootify.io/next-steps/spring-boot-with-lombok.html).
+This repository contains the backend service that powers the Yari platform. The system is built with a focus on clean architecture, maintainability, and scalability.
 
-After starting the application it is accessible under `localhost:8080`.
+### Tech Stack
 
-## Build
+- Java 17  
+- Spring Boot  
+- Spring Data JPA  
+- Hibernate ORM  
+- PostgreSQL  
+- Maven  
 
-The application can be built using the following command:
+### Architecture
 
-```
-mvnw clean package
-```
+- Layered architecture (Controller → Service → Repository)  
+- RESTful API design  
+- Hibernate-based entity mapping and relationship management  
+- PostgreSQL for relational data storage  
+- Centralized exception handling and validation  
+- Environment-based configuration  
 
-Start your application with the following command - here with the profile `production`:
-
-```
-java -Dspring.profiles.active=production -jar ./target/ngo-app-0.0.1-SNAPSHOT.jar
-```
-
-If required, a Docker image can be created with the Spring Boot plugin. Add `SPRING_PROFILES_ACTIVE=production` as
-environment variable when running the container.
-
-```
-mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=io.bootify/ngo-app
-```
-
-## Further readings
-
-* [Maven docs](https://maven.apache.org/guides/index.html)  
-* [Spring Boot reference](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/)  
-* [Spring Data JPA reference](https://docs.spring.io/spring-data/jpa/reference/jpa.html)
+The backend is structured to support future feature expansion while maintaining performance and code clarity.
